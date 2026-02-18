@@ -1,0 +1,1554 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>三國殺（標準身份）｜主公先選｜全局不重複候選｜隱私＋核對｜基本/進階武將池｜一鍵回傳</title>
+  <style>
+    :root{
+      --bg:#0b0f17;
+      --muted:#9ca3af;
+      --text:#e5e7eb;
+      --border:rgba(255,255,255,.08);
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --radius:16px;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+      --ok:#22c55e;
+      --blue:#3b82f6;
+      --purple:#a855f7;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", Arial, sans-serif;
+      background: radial-gradient(1200px 800px at 15% 0%, rgba(245,158,11,.12), transparent 55%),
+                  radial-gradient(1200px 800px at 85% 20%, rgba(59,130,246,.12), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      min-height:100vh;
+    }
+    .wrap{max-width:1180px;margin:0 auto;padding:18px 14px 44px;}
+    header{
+      display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;
+      padding:14px 14px 6px;
+    }
+    h1{margin:0;font-size:18px;letter-spacing:.5px}
+    .subtitle{margin:8px 0 0;color:var(--muted);font-size:13px;line-height:1.45}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      padding:8px 10px;border-radius:999px;
+      color:var(--muted);font-size:12px;
+    }
+    .grid{display:grid;grid-template-columns:1fr;gap:12px;}
+    @media (min-width: 980px){
+      .grid{grid-template-columns: 500px 1fr;}
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:14px 14px 10px;border-bottom:1px solid var(--border);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+    }
+    .card .bd{padding:14px;}
+    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px;}
+    textarea, input, select{
+      width:100%;
+      background: rgba(0,0,0,.25);
+      color:var(--text);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:10px 12px;
+      outline:none;
+    }
+    textarea{min-height:130px;resize:vertical;line-height:1.35}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .btnbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    button{
+      appearance:none;border:1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      border-radius:12px;
+      padding:10px 12px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.15s transform,.15s opacity,.15s background;
+    }
+    button:hover{background: rgba(255,255,255,.10)}
+    button:active{transform: translateY(1px);opacity:.95}
+    .primary{ border-color: rgba(59,130,246,.45); background: rgba(59,130,246,.16); }
+    .danger{ border-color: rgba(239,68,68,.45); background: rgba(239,68,68,.12); }
+    .okbtn{ border-color: rgba(34,197,94,.45); background: rgba(34,197,94,.12); }
+    .muted{color:var(--muted)}
+    .small{font-size:12px}
+    .hr{height:1px;background:var(--border);margin:12px 0;}
+    .table{
+      width:100%;
+      border-collapse: collapse;
+      overflow:hidden;
+      border-radius: 14px;
+      border:1px solid var(--border);
+    }
+    .table th,.table td{
+      padding:10px 10px;
+      border-bottom:1px solid var(--border);
+      vertical-align:top;
+      font-size:13px;
+    }
+    .table th{color:var(--muted);font-weight:800;background: rgba(255,255,255,.03);text-align:left}
+    .table tr:last-child td{border-bottom:none}
+    .tag{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      font-size:12px;font-weight:900;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.22);
+      white-space:nowrap;
+    }
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+    .copy{
+      display:inline-flex;gap:8px;align-items:center;justify-content:center;
+      padding:8px 10px;border-radius:10px;font-size:12px;
+      border:1px dashed var(--border);background: rgba(255,255,255,.03);
+      cursor:pointer;
+    }
+    .notice{
+      padding:10px 12px;border-radius:14px;
+      border:1px solid rgba(245,158,11,.38);
+      background: rgba(245,158,11,.12);
+      color:#ffedd5;
+      font-size:13px;line-height:1.45;
+      white-space:pre-line;
+    }
+    .statusBox{
+      padding:10px 12px;border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      font-size:13px;line-height:1.45;
+      white-space:pre-line;
+    }
+    .ok{border-color: rgba(34,197,94,.45); background: rgba(34,197,94,.10);}
+    .bad{border-color: rgba(239,68,68,.45); background: rgba(239,68,68,.10);}
+    .warn{border-color: rgba(245,158,11,.45); background: rgba(245,158,11,.10);}
+    .hide{display:none}
+
+    /* Player view */
+    .playerView{display:none;max-width:760px;margin:0 auto;}
+    .rolePill{
+      padding:8px 12px;border-radius:999px;
+      font-weight:900;font-size:13px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      display:inline-flex;align-items:center;gap:8px;
+    }
+    .dot{width:10px;height:10px;border-radius:999px;background:#fff}
+    .heroCard{
+      display:grid;grid-template-columns: 84px 1fr;gap:12px;align-items:center;
+      padding:12px;border:1px solid var(--border);border-radius:14px;background: rgba(0,0,0,.18);
+    }
+    .heroImg{
+      width:84px;height:84px;border-radius:16px;border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      display:flex;align-items:center;justify-content:center;
+      color:var(--muted);font-weight:900;font-size:22px;
+      overflow:hidden;
+    }
+    .heroName{margin:0 0 6px;font-size:16px}
+    .heroMeta{margin:0;color:var(--muted);font-size:12px;line-height:1.4}
+    .skills{margin-top:10px}
+    .skill{
+      padding:10px 10px;border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      margin-top:8px;
+    }
+    .skill b{display:block;margin-bottom:4px}
+    .sectionTitle{margin:14px 0 8px;font-weight:900}
+    .heroPickGrid{display:grid;grid-template-columns:1fr;gap:10px;}
+    @media (min-width:780px){
+      .heroPickGrid{grid-template-columns: 1fr 1fr;}
+    }
+    .pickBtn{
+      margin-top:10px;
+      width:100%;
+      border-color: rgba(34,197,94,.45);
+      background: rgba(34,197,94,.12);
+    }
+    .locked{
+      border-color: rgba(34,197,94,.45);
+      background: rgba(34,197,94,.08);
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>三國殺（標準身份）｜主公先選｜全局不重複候選｜隱私＋核對｜基本/進階武將池｜一鍵回傳</h1>
+      <p class="subtitle">
+        Phase 1：只發主公連結（5選1）→ 主公回傳 → 主持人匯入 → Phase 2：發其他人連結（各自3選1，並公開主公武將）<br>
+        ✅ 玩家只知道自己身份｜✅ Phase 2 身份預設遮住｜✅ 回傳碼不含身份｜✅ 全場「候選」武將不重複（因此最終也不重複）<br>
+        ✅ 武將池分「基本版 / 進階版」：自動模式會在需要時升級到「基本+進階」｜✅ 選好後一鍵回傳（複製整段＋LINE分享）
+      </p>
+    </div>
+    <div class="pill">模式：<span class="mono" id="modeText">Host / Player</span></div>
+  </header>
+
+  <!-- Player View -->
+  <section class="playerView" id="playerView">
+    <div class="card">
+      <div class="hd">
+        <div>
+          <div class="small muted">你的畫面</div>
+          <div style="font-weight:900;font-size:16px" id="pvPlayerName">玩家</div>
+        </div>
+        <div class="tag">房間：<span class="mono" id="pvRoomName">-</span></div>
+      </div>
+      <div class="bd">
+        <div class="notice" style="margin-bottom:12px">
+          請勿轉傳你的專屬連結（內含你的身份與候選武將）。
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;align-items:center">
+          <div class="rolePill">
+            <span class="dot" id="pvRoleDot"></span>
+            <span id="pvRoleName">身份</span>
+          </div>
+          <button class="primary" id="pvToggleRoleBtn">顯示身份</button>
+          <div class="tag">主公：<b id="pvLordName">-</b></div>
+          <div class="tag">階段：<b id="pvPhaseName">-</b></div>
+          <div class="tag">武將池：<b id="pvPoolName">-</b></div>
+        </div>
+
+        <div class="small muted" style="margin:-6px 0 10px;line-height:1.45">
+          ※ Phase 2 預設「遮住身份」，避免旁人瞄到你手機。你可自行按「顯示身份」查看，再按一次隱藏。
+        </div>
+
+        <div id="pvPickBlock">
+          <div class="sectionTitle" id="pvPickTitle">請從候選武將中選 1 位</div>
+          <div class="small muted" style="margin:-4px 0 10px;line-height:1.45">
+            選好後會鎖定，並產生「一鍵回傳文字」（不含身份）。直接貼給主持人即可。
+          </div>
+          <div class="heroPickGrid" id="pvHeroChoices"></div>
+        </div>
+
+        <div id="pvChosenBlock" class="hide">
+          <div class="sectionTitle">你選擇的武將</div>
+          <div class="heroCard locked">
+            <div class="heroImg" id="pvHeroImg">將</div>
+            <div>
+              <p class="heroName" id="pvHeroName">-</p>
+              <p class="heroMeta" id="pvHeroMeta">—</p>
+            </div>
+          </div>
+          <div class="skills" id="pvSkills"></div>
+
+          <div class="sectionTitle">選角回傳碼（貼給主持人匯入）</div>
+          <div class="statusBox warn">
+            <div class="small muted" style="margin-bottom:8px;line-height:1.45">
+              這段不含身份，只用來讓主持人知道你選了哪位武將。
+            </div>
+
+            <div class="mono" id="pvCommitCode" style="word-break:break-all"></div>
+
+            <div class="hr"></div>
+
+            <div class="small muted" style="margin-bottom:8px;line-height:1.45">
+              ✅ 一鍵回傳（建議貼到 LINE）：下面文字已包含回傳碼（不含身份）
+            </div>
+            <div class="statusBox" style="border-style:dashed">
+              <div class="mono" id="pvLineMsg" style="white-space:pre-wrap;word-break:break-word"></div>
+            </div>
+
+            <div class="btnbar" style="margin-top:10px">
+              <button id="pvCopyCommit" class="primary">只複製回傳碼</button>
+              <button id="pvCopyLineMsg" class="okbtn">複製「回傳文字＋回傳碼」</button>
+              <button id="pvOpenLineShare" class="primary">開啟 LINE 分享</button>
+              <button id="pvResetPick" class="danger">重選（清除本機）</button>
+            </div>
+
+            <div class="small muted" style="margin-top:8px;line-height:1.45">
+              ※「開啟 LINE 分享」在手機版 LINE 才會正常工作；桌機請用複製貼上即可。
+            </div>
+          </div>
+        </div>
+
+        <div id="pvLordPublicBlock" class="hide">
+          <div class="sectionTitle">主公公開武將</div>
+          <div class="heroCard">
+            <div class="heroImg" id="pvLordHeroImg">將</div>
+            <div>
+              <p class="heroName" id="pvLordHeroName">-</p>
+              <p class="heroMeta" id="pvLordHeroMeta">—</p>
+            </div>
+          </div>
+          <div class="skills" id="pvLordSkills"></div>
+        </div>
+
+        <div class="small muted" style="margin-top:12px;line-height:1.45">
+          ※ 此頁面不會顯示其他玩家的身份與武將。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Host View -->
+  <section class="grid" id="hostView">
+    <div class="card">
+      <div class="hd">
+        <div style="font-weight:900">主持人設定（兩階段）</div>
+        <button class="danger" id="btnResetAll">清除本機資料</button>
+      </div>
+      <div class="bd">
+        <div class="row">
+          <div>
+            <label>房間名稱（選填）</label>
+            <input id="roomName" placeholder="例：週三夜戰" />
+          </div>
+          <div>
+            <label>主公指定方式</label>
+            <select id="lordMode">
+              <option value="random">隨機主公</option>
+              <option value="fixed">指定主公（用名字）</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <div>
+            <label>指定主公名字（lordMode=fixed 才會用）</label>
+            <input id="fixedLord" placeholder="例：Stanley" />
+          </div>
+          <div>
+            <label>武將池版本</label>
+            <select id="heroPoolMode">
+              <option value="auto">自動（人少用基本，不夠就升級到基本+進階）</option>
+              <option value="basic">只用基本版</option>
+              <option value="all">基本 + 進階</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:10px">
+          <label>玩家名單（每行一位）</label>
+          <textarea id="players" placeholder="例：&#10;Stanley&#10;Amy&#10;Kevin&#10;..."></textarea>
+        </div>
+
+        <div class="btnbar">
+          <button class="primary" id="btnPhase1">Phase 1：抽身份＋只發主公連結（5選1）</button>
+          <button id="btnDemo">載入示例名單</button>
+          <button id="btnEditHeroes">編輯武將池（基本/進階 JSON）</button>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="statusBox warn">
+          <b>匯入主公回傳碼</b>
+          <div class="small muted" style="margin-top:6px;line-height:1.45">
+            主公選好武將後貼回傳碼給你。你匯入成功後，才能進入 Phase 2（發其他人連結並公開主公武將）。
+          </div>
+          <textarea id="lordCommitInput" style="min-height:92px;margin-top:10px" placeholder="貼主公回傳碼（通常一行即可）"></textarea>
+          <div class="btnbar">
+            <button class="primary" id="btnImportLord">匯入主公回傳碼</button>
+            <button class="danger" id="btnClearLordCommit">清空</button>
+          </div>
+          <div class="small muted" id="lordImportMsg" style="margin-top:8px;line-height:1.45"></div>
+        </div>
+
+        <div class="btnbar" style="margin-top:12px">
+          <button class="primary" id="btnPhase2" disabled>Phase 2：發其他人連結（各自3選1＋公開主公武將）</button>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="statusBox warn">
+          <b>匯入其他玩家回傳碼</b>
+          <div class="small muted" style="margin-top:6px;line-height:1.45">
+            其他玩家選好後，把多個回傳碼貼在下面（每行一個）→ 匯入更新核對表。
+          </div>
+          <textarea id="commitInput" style="min-height:110px;margin-top:10px" placeholder="貼回傳碼（每行一個）"></textarea>
+          <div class="btnbar">
+            <button id="btnImportCommit" class="primary">匯入回傳碼（更新核對表）</button>
+            <button id="btnClearCommit" class="danger">清空</button>
+          </div>
+          <div class="small muted" id="commitImportMsg" style="margin-top:8px;line-height:1.45"></div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="notice">
+          <b>標準版身份配法（4–10人）</b>
+          4：主1 反2 內1
+          5：主1 忠1 反2 內1
+          6：主1 忠1 反3 內1
+          7：主1 忠2 反3 內1
+          8：主1 忠2 反4 內1
+          9：主1 忠3 反4 內1
+          10：主1 忠3 反5 內1
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="hd">
+        <div style="font-weight:900">連結＆核對表</div>
+        <div class="small muted">（核對表預設隱藏）</div>
+      </div>
+      <div class="bd">
+        <div id="resultEmpty" class="muted">尚未開始。</div>
+        <div id="resultBox" class="hide"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hero Pool Editor -->
+  <section class="card hide" id="heroEditor">
+    <div class="hd">
+      <div style="font-weight:900">武將池（基本 / 進階 JSON）</div>
+      <div class="btnbar" style="margin:0">
+        <button class="primary" id="btnSaveHeroes">儲存武將池</button>
+        <button class="danger" id="btnResetHeroes">重置為預設</button>
+        <button id="btnCloseHeroes">關閉</button>
+      </div>
+    </div>
+    <div class="bd">
+      <div class="small muted" style="margin-bottom:10px;line-height:1.45">
+        格式：<span class="mono">[{ id, name, faction, title, hp, desc, skills:[{name, desc}] }]</span><br>
+        注意：這個編輯只會影響「你這台裝置」。玩家手機開你的連結時，會以同一份 HTML 內建武將資料為準。
+      </div>
+
+      <div class="row">
+        <div>
+          <label>基本版武將池（JSON）</label>
+          <textarea id="heroesJsonBasic" style="min-height:260px" spellcheck="false"></textarea>
+        </div>
+        <div>
+          <label>進階版武將池（JSON）</label>
+          <textarea id="heroesJsonAdv" style="min-height:260px" spellcheck="false"></textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ========================= utils ========================= */
+function $(sel){ return document.querySelector(sel); }
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, s => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[s]));
+}
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+function toBase64Url(str){
+  const bytes = new TextEncoder().encode(str);
+  let bin = "";
+  bytes.forEach(b => bin += String.fromCharCode(b));
+  return btoa(bin).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+function fromBase64Url(b64){
+  const pad = "=".repeat((4 - (b64.length % 4)) % 4);
+  const norm = (b64 + pad).replace(/-/g,"+").replace(/_/g,"/");
+  const bin = atob(norm);
+  const bytes = new Uint8Array([...bin].map(ch => ch.charCodeAt(0)));
+  return new TextDecoder().decode(bytes);
+}
+async function copyText(text){
+  try{
+    await navigator.clipboard.writeText(text);
+    alert("已複製到剪貼簿");
+  }catch(e){
+    const ta = document.createElement("textarea");
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand("copy");
+    document.body.removeChild(ta);
+    alert("已複製到剪貼簿");
+  }
+}
+function randToken(len=10){
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const bytes = new Uint8Array(len);
+  (crypto?.getRandomValues ? crypto.getRandomValues(bytes) : bytes.fill(Math.random()*255));
+  let out = "";
+  for(let i=0;i<len;i++) out += chars[bytes[i] % chars.length];
+  return out;
+}
+
+/* ========================= heroes (BASIC / ADVANCED) ========================= */
+const DEFAULT_BASIC_HEROES = [
+  // 魏
+  { id:"caocao", name:"曹操", faction:"魏", title:"魏武帝", hp:4, desc:"善於收編與借力，越受打擊越能化為資源。", skills:[
+    {name:"奸雄", desc:"每當你受到一次傷害後，你可以獲得造成此傷害的牌（若有多張牌共同造成傷害，獲得其中的相關牌）。"},
+    {name:"護駕（主公技）", desc:"當你需要使用或打出一張【閃】時，你可以令其他魏勢力角色依次選擇是否打出一張【閃】；若有角色打出，視為你使用或打出該【閃】。"}
+  ]},
+  { id:"simayi", name:"司馬懿", faction:"魏", title:"狼顧之鬼", hp:3, desc:"擅長奪取對手資源，並操控判定走向。", skills:[
+    {name:"反饋", desc:"每當你受到一次傷害後，你可以獲得傷害來源的一張牌（手牌或裝備區均可）。"},
+    {name:"鬼才", desc:"在一名角色的判定牌生效前，你可以打出一張手牌代替之（改變判定結果）。"}
+  ]},
+  { id:"xiahoudun", name:"夏侯惇", faction:"魏", title:"獨眼的羅刹", hp:4, desc:"受傷即反擊，能逼迫敵人付出代價。", skills:[
+    {name:"剛烈", desc:"每當你受到一次傷害後，你可以進行判定：若結果為紅色，傷害來源棄置兩張牌；若結果為黑色，傷害來源受到你造成的1點傷害。"}
+  ]},
+  { id:"zhangliao", name:"張遼", faction:"魏", title:"前將軍", hp:4, desc:"擅長在對手摸牌時掠奪關鍵手牌。", skills:[
+    {name:"突襲", desc:"摸牌階段，你可以少摸任意張牌，改為從至多兩名其他角色的手牌中各獲得等量的牌（總數不超過你少摸的張數）。"}
+  ]},
+  { id:"xuchu", name:"許褚", faction:"魏", title:"虎痴", hp:4, desc:"以攻換守，集中火力打穿防線。", skills:[
+    {name:"裸衣", desc:"摸牌階段，你可以少摸一張牌；若如此做，本回合你使用【殺】或【決鬥】造成的傷害+1。"}
+  ]},
+  { id:"guojia", name:"郭嘉", faction:"魏", title:"早逝的鬼才", hp:3, desc:"以受傷換資源，並能精準干預判定。", skills:[
+    {name:"天妒", desc:"當你的判定牌生效後，你可以獲得此判定牌。"},
+    {name:"遺計", desc:"每當你受到一次傷害後，你可以摸兩張牌，然後你可以將其中任意張牌交給任意角色（可分配給多名角色）。"}
+  ]},
+  { id:"zhenji", name:"甄姬", faction:"魏", title:"洛神", hp:3, desc:"穩定的過牌與防禦轉化能力。", skills:[
+    {name:"洛神", desc:"回合開始階段，你可以進行判定：若結果為黑色，你獲得此牌並可再次判定；直到判定結果為紅色或你選擇停止為止。"},
+    {name:"傾國", desc:"你可以將一張黑色手牌當【閃】使用或打出。"}
+  ]},
+
+  // 蜀
+  { id:"liubei", name:"劉備", faction:"蜀", title:"漢昭烈帝", hp:4, desc:"以仁德凝聚同盟，並能發動蜀勢力的配合。", skills:[
+    {name:"仁德", desc:"出牌階段，你可以將任意張手牌交給其他角色；若你於此階段以此法交出的牌數累計首次達到2張或以上，你可以回復1點體力（每回合最多一次）。"},
+    {name:"激將（主公技）", desc:"當你需要使用或打出一張【殺】時，你可以令其他蜀勢力角色依次選擇是否打出一張【殺】；若有角色打出，視為你使用或打出該【殺】。"}
+  ]},
+  { id:"guanyu", name:"關羽", faction:"蜀", title:"武聖", hp:4, desc:"紅牌化殺，攻擊節奏極具威懾。", skills:[
+    {name:"武聖", desc:"你可以將一張紅色牌當【殺】使用或打出。"}
+  ]},
+  { id:"zhangfei", name:"張飛", faction:"蜀", title:"萬夫不當", hp:4, desc:"爆發式連殺，強行壓制對手。", skills:[
+    {name:"咆哮", desc:"出牌階段，你使用【殺】無次數限制。"}
+  ]},
+  { id:"zhugeliang", name:"諸葛亮", faction:"蜀", title:"臥龍", hp:3, desc:"控牌堆與空城防守，節奏型核心。", skills:[
+    {name:"觀星", desc:"回合開始階段，你可以觀看牌堆頂的若干張牌（通常與存活角色數相關），將其以任意順序置於牌堆頂或牌堆底。"},
+    {name:"空城", desc:"若你沒有手牌，你不能成為【殺】或【決鬥】的目標。"}
+  ]},
+  { id:"zhaoyun", name:"趙雲", faction:"蜀", title:"少年將軍", hp:4, desc:"攻守互換，常能在關鍵時刻反打。", skills:[
+    {name:"龍膽", desc:"你可以將【殺】當【閃】使用或打出；也可以將【閃】當【殺】使用或打出。"}
+  ]},
+  { id:"machao", name:"馬超", faction:"蜀", title:"西涼鐵騎", hp:4, desc:"距離優勢與破閃壓制，擅長點殺。", skills:[
+    {name:"馬術", desc:"你計算與其他角色的距離時，始終-1。"},
+    {name:"鐵騎", desc:"當你使用【殺】指定一名角色為目標後，你可以進行判定：若結果為紅色，該目標本次不能使用【閃】響應此【殺】。"}
+  ]},
+  { id:"huangyueying", name:"黃月英", faction:"蜀", title:"歸隱才女", hp:3, desc:"錦囊循環強，越用計越能過牌。", skills:[
+    {name:"集智", desc:"當你使用一張非延時類錦囊牌時，你可以摸一張牌。"},
+    {name:"奇才", desc:"你使用錦囊牌無距離限制（若該錦囊牌原本有距離限制）。"}
+  ]},
+
+  // 吳
+  { id:"sunquan", name:"孫權", faction:"吳", title:"江東之主", hp:4, desc:"以制衡換牌、調整手牌結構的節奏型主將。", skills:[
+    {name:"制衡", desc:"出牌階段限一次，你可以棄置任意張牌，然後摸等量的牌。"},
+    {name:"救援（主公技）", desc:"當吳勢力角色對你使用【桃】時，其回復效果額外+1點（若你的版本規則不同，可自行在編輯器調整敘述）。"}
+  ]},
+  { id:"ganning", name:"甘寧", faction:"吳", title:"錦帆遊俠", hp:4, desc:"以黑牌拆遷，破壞對手裝備與關鍵延時錦囊。", skills:[
+    {name:"奇襲", desc:"你可以將一張黑色牌當【過河拆橋】使用。"}
+  ]},
+  { id:"lumeng", name:"呂蒙", faction:"吳", title:"白衣渡江", hp:4, desc:"保牌能力強，適合累積資源打後期。", skills:[
+    {name:"克己", desc:"若你於出牌階段沒有使用或打出過【殺】，你可以跳過棄牌階段。"}
+  ]},
+  { id:"huanggai", name:"黃蓋", faction:"吳", title:"苦肉先鋒", hp:4, desc:"以體力換手牌，強行加速開局。", skills:[
+    {name:"苦肉", desc:"出牌階段，你可以失去1點體力，然後摸兩張牌。"}
+  ]},
+  { id:"zhouyu", name:"周瑜", faction:"吳", title:"大都督", hp:3, desc:"過牌與控手結合，擅長輸出與干擾。", skills:[
+    {name:"英姿", desc:"摸牌階段，你可以額外摸一張牌。"},
+    {name:"反間", desc:"出牌階段限一次，你令一名其他角色選擇一種花色並展示；你棄置一張手牌並展示之：若花色不同，該角色受到1點傷害；若相同，該角色獲得此牌。"}
+  ]},
+  { id:"daqiao", name:"大喬", faction:"吳", title:"矜持之花", hp:3, desc:"控制與轉移目標，擅長打亂對手節奏。", skills:[
+    {name:"國色", desc:"你可以將一張方塊牌當【樂不思蜀】使用。"},
+    {name:"流離", desc:"當你成為【殺】的目標時，你可以棄置一張牌，將此【殺】轉移給你攻擊範圍內的一名其他角色（該角色成為新的目標）。"}
+  ]},
+  { id:"luxun", name:"陸遜", faction:"吳", title:"儒將", hp:3, desc:"抗順手與連營過牌，難以被一波打空。", skills:[
+    {name:"謙遜", desc:"你不能成為【順手牽羊】與【樂不思蜀】的目標。"},
+    {name:"連營", desc:"當你失去最後一張手牌後，你可以摸一張牌。"}
+  ]},
+
+  // 群
+  { id:"huatuo", name:"華佗", faction:"群", title:"神醫", hp:3, desc:"救援能力突出，能把紅牌轉成救命資源。", skills:[
+    {name:"青囊", desc:"出牌階段限一次，你可以棄置一張手牌，令一名已受傷角色回復1點體力。"},
+    {name:"急救", desc:"你的紅色牌可以當【桃】在一名角色瀕死時使用（包括你自己）。"}
+  ]},
+  { id:"lvbu", name:"呂布", faction:"群", title:"飛將", hp:4, desc:"單挑霸主，逼迫對手付出更多防禦成本。", skills:[
+    {name:"無雙", desc:"當你使用【殺】指定一名角色為目標後，該角色需連續使用兩張【閃】才能抵消；當你與一名角色【決鬥】時，對方每次需連續打出兩張【殺】才算一次有效響應。"}
+  ]},
+  { id:"diaochan", name:"貂蟬", faction:"群", title:"絕世舞姬", hp:3, desc:"製造對撞與回合補牌，能拆解陣型。", skills:[
+    {name:"離間", desc:"出牌階段限一次，你可以棄置一張牌，令兩名男性角色進行【決鬥】（視為其中一方向另一方使用【決鬥】）。"},
+    {name:"閉月", desc:"回合結束階段，你可以摸一張牌。"}
+  ]}
+];
+
+const DEFAULT_ADV_HEROES = [
+  // 魏（進階）
+  { id:"dianwei", name:"典韋", faction:"魏", title:"古之惡來", hp:4, desc:"以命換命的壓迫型前排。", skills:[
+    {name:"強襲", desc:"出牌階段限一次，你可以失去1點體力或棄置一張武器牌，對你攻擊範圍內的一名角色造成1點傷害。"}
+  ]},
+  { id:"xuhuang", name:"徐晃", faction:"魏", title:"周亞夫之風", hp:4, desc:"以兵糧限制對手摸牌，打資源戰。", skills:[
+    {name:"斷糧", desc:"你可以將一張黑色的基本牌或裝備牌當【兵糧寸斷】使用；你使用【兵糧寸斷】時可指定距離為2的角色為目標。"}
+  ]},
+  { id:"zhanghe", name:"張郃", faction:"魏", title:"料敵機先", hp:4, desc:"靠巧變移動場面資源，彈性極高。", skills:[
+    {name:"巧變", desc:"你可以棄置一張手牌並跳過你的某個階段；若你跳過摸牌階段或出牌階段，你可以移動場上的一張牌（裝備或延時錦囊）到另一名合法角色的對應區域。"}
+  ]},
+
+  // 蜀（進階）
+  { id:"pangtong", name:"龐統", faction:"蜀", title:"鳳雛", hp:3, desc:"連環與重生，能製造成片輸出或防線崩潰。", skills:[
+    {name:"連環", desc:"你可以將一張梅花牌當【鐵索連環】使用；或將【鐵索連環】重鑄（棄置之並摸一張牌）。"},
+    {name:"涅槃（限定技）", desc:"當你處於瀕死狀態時，你可以棄置你區域內的所有牌，然後將體力回復至3點、摸三張牌，並將你的武將牌翻面。每局限一次。"}
+  ]},
+  { id:"huangzhong", name:"黃忠", faction:"蜀", title:"老當益壯", hp:4, desc:"攻擊範圍與手牌條件壓制閃避。", skills:[
+    {name:"烈弓", desc:"當你使用【殺】指定一名角色為目標後，若其手牌數不大於你的攻擊範圍，你可以令其不能使用【閃】響應此【殺】。"}
+  ]},
+  { id:"weiyan", name:"魏延", faction:"蜀", title:"嗜血獨狼", hp:4, desc:"靠輸出續航，適合滾雪球。", skills:[
+    {name:"狂骨", desc:"當你對距離1以內的一名角色造成1點傷害後，你可以回復1點體力。"}
+  ]},
+
+  // 吳（進階）
+  { id:"xiaoqiao", name:"小喬", faction:"吳", title:"矯情之花", hp:3, desc:"以紅顏改花色，並用天香轉移傷害。", skills:[
+    {name:"紅顏", desc:"你的黑桃牌視為紅桃牌（其花色視為紅桃）。"},
+    {name:"天香", desc:"當你受到傷害時，你可以棄置一張紅桃手牌，將此傷害轉移給另一名角色，然後該角色摸等同於其已失去體力值的牌（或按你使用的版本規則結算摸牌）。"}
+  ]},
+  { id:"sunshangxiang", name:"孫尚香", faction:"吳", title:"弓腰姬", hp:3, desc:"裝備循環與回復，偏向操作型。", skills:[
+    {name:"結姻", desc:"出牌階段限一次，你可以棄置兩張手牌，令你與一名已受傷的男性角色各回復1點體力。"},
+    {name:"梟姬", desc:"當你失去裝備區的一張牌後，你可以摸兩張牌。"}
+  ]},
+  { id:"taishici", name:"太史慈", faction:"吳", title:"篤行之士", hp:4, desc:"拼點成敗決定爆發能力與行動限制。", skills:[
+    {name:"天義", desc:"出牌階段限一次，你可以與一名其他角色拼點：若你贏，本回合你使用【殺】無距離限制且可額外使用一張【殺】；若你輸，本回合你不能使用【殺】。"}
+  ]},
+
+  // 群（進階）
+  { id:"yuanshao", name:"袁紹", faction:"群", title:"名門之望", hp:4, desc:"群體輸出與壓迫，擅長形成多點壓力。", skills:[
+    {name:"亂擊", desc:"你可以將兩張相同花色的手牌當【萬箭齊發】使用。"}
+  ]},
+  { id:"zhangjiao", name:"張角", faction:"群", title:"天公將軍", hp:3, desc:"雷擊與鬼道控判定，變數極大。", skills:[
+    {name:"雷擊", desc:"當你使用或打出【閃】時，你可以令一名角色進行判定：若結果為黑桃，該角色受到2點雷電傷害。"},
+    {name:"鬼道", desc:"在一名角色的判定牌生效前，你可以打出一張黑色牌替換之（改變判定）。"}
+  ]},
+  { id:"yanliangwenchou", name:"顏良文醜", faction:"群", title:"河北雙雄", hp:4, desc:"快節奏爆發，能在短回合內形成連續壓迫。", skills:[
+    {name:"雙雄", desc:"摸牌階段你可以改為進行一次判定並獲得判定牌；本回合你可以將與該判定牌顏色不同的手牌當【決鬥】使用。"}
+  ]}
+];
+
+const LS_KEYS = {
+  heroes_basic: "sgs_heroes_basic_v2",
+  heroes_adv:   "sgs_heroes_adv_v2",
+  draft:  "sgs_phase_unique_host_draft_v2",
+  host:   "sgs_phase_unique_host_state_v2",
+  playerPick: "sgs_phase_unique_player_pick_v2",
+  roleReveal: "sgs_phase_unique_role_reveal_v2"
+};
+
+function loadHeroesTwoTiers(){
+  let basic = DEFAULT_BASIC_HEROES;
+  let adv = DEFAULT_ADV_HEROES;
+  try{
+    const rb = localStorage.getItem(LS_KEYS.heroes_basic);
+    if(rb) {
+      const p = JSON.parse(rb);
+      if(Array.isArray(p)) basic = p;
+    }
+  }catch(e){}
+  try{
+    const ra = localStorage.getItem(LS_KEYS.heroes_adv);
+    if(ra) {
+      const p = JSON.parse(ra);
+      if(Array.isArray(p)) adv = p;
+    }
+  }catch(e){}
+  return { basic, adv };
+}
+function saveHeroesTwoTiers(basic, adv){
+  localStorage.setItem(LS_KEYS.heroes_basic, JSON.stringify(basic, null, 2));
+  localStorage.setItem(LS_KEYS.heroes_adv, JSON.stringify(adv, null, 2));
+}
+function resetHeroesTwoTiers(){
+  localStorage.removeItem(LS_KEYS.heroes_basic);
+  localStorage.removeItem(LS_KEYS.heroes_adv);
+}
+
+let HEROES_BASIC = loadHeroesTwoTiers().basic;
+let HEROES_ADV   = loadHeroesTwoTiers().adv;
+
+function getHeroesAll(){ return HEROES_BASIC.concat(HEROES_ADV); }
+
+function validateHeroArray(arr, label){
+  if(!Array.isArray(arr)) throw new Error(label + " 必須是陣列");
+  const ids = new Set();
+  arr.forEach((h, idx) => {
+    if(!h || typeof h !== "object") throw new Error(`${label} 第 ${idx+1} 筆不是物件`);
+    if(!h.id || !h.name) throw new Error(`${label} 第 ${idx+1} 筆缺少 id 或 name`);
+    if(ids.has(h.id)) throw new Error(`${label} 出現重複 id：${h.id}`);
+    ids.add(h.id);
+    if(!Array.isArray(h.skills)) h.skills = [];
+  });
+}
+
+/* ========================= roles ========================= */
+const ROLE_META = {
+  lord:   { name:"主公", color:"#f59e0b" },
+  loyal:  { name:"忠臣", color:"#3b82f6" },
+  rebel:  { name:"反賊", color:"#ef4444" },
+  spy:    { name:"內奸", color:"#a855f7" },
+};
+function campOfRole(role){
+  if(role === "lord" || role === "loyal") return "主公方";
+  if(role === "rebel") return "反賊方";
+  if(role === "spy") return "內奸";
+  return "—";
+}
+function rolePresetByCount(n){
+  const map = {
+    4:  { loyal:0, rebel:2, spy:1 },
+    5:  { loyal:1, rebel:2, spy:1 },
+    6:  { loyal:1, rebel:3, spy:1 },
+    7:  { loyal:2, rebel:3, spy:1 },
+    8:  { loyal:2, rebel:4, spy:1 },
+    9:  { loyal:3, rebel:4, spy:1 },
+    10: { loyal:3, rebel:5, spy:1 },
+  };
+  return map[n] || null;
+}
+function buildRoleList(playerCount){
+  const p = rolePresetByCount(playerCount);
+  if(!p) throw new Error("標準版建議 4–10 人。");
+  return ["lord"]
+    .concat(Array(p.loyal).fill("loyal"))
+    .concat(Array(p.rebel).fill("rebel"))
+    .concat(Array(p.spy).fill("spy"));
+}
+function normalizePlayers(text){
+  return (text || "").split("\n").map(s => s.trim()).filter(Boolean);
+}
+function pickLord(players, lordMode, fixedLord){
+  if(lordMode === "fixed"){
+    const name = (fixedLord || "").trim();
+    if(!name) throw new Error("你選了指定主公，但沒填名字。");
+    if(!players.includes(name)) throw new Error("指定主公名字不在玩家名單內。");
+    return name;
+  }
+  return players[Math.floor(Math.random()*players.length)];
+}
+function assignRoles(players, roles, lordName){
+  const others = players.filter(p => p !== lordName);
+  const remaining = roles.slice();
+  remaining.splice(remaining.indexOf("lord"), 1);
+  const shuffledPlayers = shuffle(others);
+  const shuffledRoles = shuffle(remaining);
+  const out = [{ player: lordName, role: "lord" }];
+  shuffledPlayers.forEach((p, i) => out.push({ player:p, role: shuffledRoles[i] }));
+  return out;
+}
+function roleSortKey(role){
+  if(role === "lord") return 0;
+  if(role === "loyal") return 1;
+  if(role === "rebel") return 2;
+  if(role === "spy") return 3;
+  return 9;
+}
+
+/* ========================= hero pool selection ========================= */
+function poolLabel(poolCode){
+  if(poolCode === "basic") return "基本版";
+  if(poolCode === "all") return "基本+進階";
+  return "—";
+}
+function needRemainingForOthers(nPlayers){
+  return 3 * (nPlayers - 1);
+}
+function choosePoolAuto(nPlayers){
+  const need = needRemainingForOthers(nPlayers);
+  const basicTotal = HEROES_BASIC.length;
+  if((basicTotal - 1) >= need) return "basic";
+  const allTotal = getHeroesAll().length;
+  if((allTotal - 1) >= need) return "all";
+  return "all";
+}
+function getActiveHeroesByPool(poolCode){
+  if(poolCode === "basic") return HEROES_BASIC.slice();
+  if(poolCode === "all") return getHeroesAll();
+  return getHeroesAll();
+}
+function heroById(id){
+  return getHeroesAll().find(h => h.id === id) || null;
+}
+
+/* ========================= hero dealing (GLOBAL UNIQUE) ========================= */
+function dealLordOptionsUnique5(activeHeroes){
+  const ids = shuffle(activeHeroes.map(h=>h.id));
+  if(ids.length < 5) throw new Error("武將池不足：至少需要 5 位武將。");
+  return ids.slice(0, 5);
+}
+function dealOthersOptionsGlobalUnique(activeHeroes, hostState){
+  const others = hostState.assignments.filter(a => a.player !== hostState.lordName);
+  const need = others.length * 3;
+
+  const remaining = activeHeroes
+    .map(h=>h.id)
+    .filter(id => id !== hostState.lordHeroId);
+
+  if(remaining.length < need){
+    throw new Error(
+      `武將池不足以做到「全局不重複候選」：\n` +
+      `需要剩餘武將 >= ${need}，目前剩餘 ${remaining.length}。\n` +
+      `建議：把「武將池版本」切到「基本+進階」，或減少人數，或在編輯器增加武將。`
+    );
+  }
+
+  const shuffled = shuffle(remaining);
+  const chunk = shuffled.slice(0, need);
+
+  const byPlayer = {};
+  others.forEach((a, idx) => {
+    byPlayer[a.player] = chunk.slice(idx*3, idx*3+3);
+  });
+  return byPlayer;
+}
+
+/* ========================= payloads ========================= */
+function packPlayerPayloadV4({ roomName, playerName, role, heroOptions, lordName, phase, lordHeroId, token, poolCode }){
+  const payload = {
+    v: 4,
+    roomName,
+    playerName,
+    role,
+    heroOptions,
+    lordName,
+    phase,
+    lordHeroId: (phase === 2) ? (lordHeroId || null) : null,
+    token,
+    poolCode
+  };
+  return toBase64Url(JSON.stringify(payload));
+}
+function packCommitCode({ playerName, token, heroId }){
+  return toBase64Url(JSON.stringify({ v: 1, playerName, token, heroId }));
+}
+function parseCommitCode(code){
+  try{
+    const obj = JSON.parse(fromBase64Url(code.trim()));
+    if(!obj || !obj.playerName || !obj.token || !obj.heroId) return null;
+    return obj;
+  }catch(e){ return null; }
+}
+
+/* ========================= local storage ========================= */
+function loadDraft(){
+  try{ const raw = localStorage.getItem("sgs_phase_unique_host_draft_v2"); return raw ? JSON.parse(raw) : null; }
+  catch(e){ return null; }
+}
+function saveDraft(d){ localStorage.setItem("sgs_phase_unique_host_draft_v2", JSON.stringify(d)); }
+function loadHost(){
+  try{ const raw = localStorage.getItem("sgs_phase_unique_host_state_v2"); return raw ? JSON.parse(raw) : null; }
+  catch(e){ return null; }
+}
+function saveHost(s){ localStorage.setItem("sgs_phase_unique_host_state_v2", JSON.stringify(s)); }
+
+/* ========================= player view ========================= */
+function setModeText(text){ $("#modeText").textContent = text; }
+
+function playerPickStorageKey(roomName, playerName, token){
+  return `sgs_phase_unique_player_pick_v2::${roomName||""}::${playerName||""}::${token||""}`;
+}
+function roleRevealKey(roomName, playerName, token){
+  return `sgs_phase_unique_role_reveal_v2::${roomName||""}::${playerName||""}::${token||""}`;
+}
+
+function renderHeroCard(containerEl, hero, btnText, onPick){
+  const skills = Array.isArray(hero.skills) ? hero.skills : [];
+  const skillHtml = skills.map(s => `
+    <div class="skill">
+      <b>${escapeHtml(s.name || "技能")}</b>
+      <div class="small muted">${escapeHtml(s.desc || "")}</div>
+    </div>
+  `).join("");
+
+  const div = document.createElement("div");
+  div.className = "card";
+  div.innerHTML = `
+    <div class="bd">
+      <div class="heroCard">
+        <div class="heroImg">${escapeHtml((hero.name||"將").slice(0,1))}</div>
+        <div>
+          <p class="heroName">${escapeHtml(hero.name)}</p>
+          <p class="heroMeta">${escapeHtml(`${hero.faction||"—"}｜${hero.title||"—"}｜體力 ${hero.hp ?? "—"}｜${hero.desc||""}`)}</p>
+        </div>
+      </div>
+      <div class="skills">${skillHtml || `<div class="small muted" style="margin-top:10px">（此武將尚未填入技能介紹）</div>`}</div>
+      <button class="pickBtn">${escapeHtml(btnText)}</button>
+    </div>
+  `;
+  div.querySelector("button").addEventListener("click", () => onPick(hero.id));
+  containerEl.appendChild(div);
+}
+
+function renderChosen(prefix, hero){
+  if(!hero){
+    $("#"+prefix+"HeroName").textContent = "未分配武將";
+    $("#"+prefix+"HeroMeta").textContent = "—";
+    $("#"+prefix+"HeroImg").textContent = "將";
+    $("#"+prefix+"Skills").innerHTML = "";
+    return;
+  }
+  $("#"+prefix+"HeroName").textContent = hero.name || "-";
+  $("#"+prefix+"HeroMeta").textContent = `${hero.faction || "—"}｜${hero.title || "—"}｜體力 ${hero.hp ?? "—"}｜${hero.desc || ""}`;
+  $("#"+prefix+"HeroImg").textContent = (hero.name || "將").slice(0,1);
+  const skills = Array.isArray(hero.skills) ? hero.skills : [];
+  $("#"+prefix+"Skills").innerHTML = skills.map(s => `
+    <div class="skill">
+      <b>${escapeHtml(s.name || "技能")}</b>
+      <div class="small muted">${escapeHtml(s.desc || "")}</div>
+    </div>
+  `).join("") || `<div class="small muted" style="margin-top:10px">（此武將尚未填入技能介紹）</div>`;
+}
+
+function showPlayerView(hashData){
+  setModeText("Player");
+  $("#hostView").style.display = "none";
+  $("#playerView").style.display = "block";
+
+  let pack;
+  try{
+    pack = JSON.parse(fromBase64Url(hashData));
+  }catch(e){
+    alert("連結資料解析失敗：可能被截斷或格式錯誤。");
+    return;
+  }
+
+  $("#pvRoomName").textContent = pack.roomName || "-";
+  $("#pvPlayerName").textContent = pack.playerName || "玩家";
+  $("#pvLordName").textContent = pack.lordName || "-";
+  $("#pvPhaseName").textContent = (pack.phase === 1) ? "Phase 1（主公先選）" : "Phase 2（其他人選）";
+  $("#pvPoolName").textContent = poolLabel(pack.poolCode);
+
+  // 身份遮罩（Phase2 預設隱藏）
+  const meta = ROLE_META[pack.role] || { name:"身份", color:"#ffffff" };
+  const token = pack.token || "";
+  const revealKey = roleRevealKey(pack.roomName, pack.playerName, token);
+
+  let revealed = false;
+  if(pack.phase === 1 && pack.role === "lord") revealed = true;
+  if(localStorage.getItem(revealKey) === "1") revealed = true;
+
+  function applyRoleUI(){
+    if(revealed){
+      $("#pvRoleName").textContent = meta.name;
+      $("#pvRoleDot").style.background = meta.color;
+      $("#pvToggleRoleBtn").textContent = "隱藏身份";
+      $("#pvToggleRoleBtn").classList.remove("primary");
+      $("#pvToggleRoleBtn").classList.add("danger");
+    }else{
+      $("#pvRoleName").textContent = "（身份已隱藏）";
+      $("#pvRoleDot").style.background = "#6b7280";
+      $("#pvToggleRoleBtn").textContent = "顯示身份";
+      $("#pvToggleRoleBtn").classList.remove("danger");
+      $("#pvToggleRoleBtn").classList.add("primary");
+    }
+    localStorage.setItem(revealKey, revealed ? "1" : "0");
+  }
+  $("#pvToggleRoleBtn").onclick = () => { revealed = !revealed; applyRoleUI(); };
+  applyRoleUI();
+
+  // phase2 公開主公武將
+  if(pack.phase === 2 && pack.lordHeroId){
+    const lh = heroById(pack.lordHeroId);
+    $("#pvLordPublicBlock").classList.remove("hide");
+    $("#pvLordHeroName").textContent = `主公｜${pack.lordName}：${lh ? lh.name : "（未知）"}`;
+    $("#pvLordHeroMeta").textContent = lh ? `${lh.faction||"—"}｜${lh.title||"—"}｜體力 ${lh.hp ?? "—"}｜${lh.desc||""}` : "—";
+    $("#pvLordHeroImg").textContent = lh ? (lh.name||"將").slice(0,1) : "將";
+    const skills = lh && Array.isArray(lh.skills) ? lh.skills : [];
+    $("#pvLordSkills").innerHTML = skills.map(s => `
+      <div class="skill">
+        <b>${escapeHtml(s.name || "技能")}</b>
+        <div class="small muted">${escapeHtml(s.desc || "")}</div>
+      </div>
+    `).join("") || `<div class="small muted" style="margin-top:10px">（主公武將技能未填）</div>`;
+  }else{
+    $("#pvLordPublicBlock").classList.add("hide");
+  }
+
+  const opts = Array.isArray(pack.heroOptions) ? pack.heroOptions : [];
+  const storageKey = playerPickStorageKey(pack.roomName, pack.playerName, token);
+
+  if(pack.phase === 1 && pack.role !== "lord"){
+    $("#pvPickBlock").classList.add("hide");
+    $("#pvChosenBlock").classList.add("hide");
+    const warn = document.createElement("div");
+    warn.className = "statusBox bad";
+    warn.textContent = "此連結為 Phase 1（只提供主公）。你不是主公，請向主持人索取 Phase 2 的連結。";
+    $("#playerView .bd").insertBefore(warn, $("#pvPickBlock"));
+    return;
+  }
+
+  // 已選過（本機）
+  const existing = localStorage.getItem(storageKey);
+  if(existing){
+    const heroId = existing;
+    const hero = heroById(heroId);
+
+    $("#pvPickBlock").classList.add("hide");
+    $("#pvChosenBlock").classList.remove("hide");
+    renderChosen("pv", hero);
+
+    const commit = packCommitCode({ playerName: pack.playerName, token, heroId });
+    $("#pvCommitCode").textContent = commit;
+
+    // 一鍵回傳文字（不含身份）
+    const room = (pack.roomName && pack.roomName.trim()) ? pack.roomName.trim() : "（未命名房間）";
+    const heroName = hero ? hero.name : "（未知武將）";
+    const lineMsg =
+      `【三國殺回傳】\n` +
+      `房間：${room}\n` +
+      `玩家：${pack.playerName}\n` +
+      `已選武將：${heroName}\n` +
+      `回傳碼：${commit}`;
+
+    $("#pvLineMsg").textContent = lineMsg;
+
+    $("#pvCopyCommit").onclick = () => copyText(commit);
+    $("#pvCopyLineMsg").onclick = () => copyText(lineMsg);
+
+    $("#pvOpenLineShare").onclick = () => {
+      const url = "https://line.me/R/share?text=" + encodeURIComponent(lineMsg);
+      window.location.href = url;
+    };
+
+    $("#pvResetPick").onclick = () => {
+      if(confirm("確定要重選？這會清掉你本機的選角記錄。")){
+        localStorage.removeItem(storageKey);
+        location.reload();
+      }
+    };
+    return;
+  }
+
+  // 尚未選：顯示候選
+  $("#pvPickBlock").classList.remove("hide");
+  $("#pvChosenBlock").classList.add("hide");
+
+  $("#pvPickTitle").textContent =
+    (pack.role === "lord" && pack.phase === 1)
+      ? "主公：從 5 位候選中選 1 位（候選不重複）"
+      : "請從 3 位候選中選 1 位（全場候選不重複）";
+
+  const box = $("#pvHeroChoices");
+  box.innerHTML = "";
+
+  if(opts.length === 0){
+    box.innerHTML = `<div class="statusBox bad">此連結沒有候選武將資料。請請主持人重新生成。</div>`;
+    return;
+  }
+
+  const uniqueOpts = [...new Set(opts)];
+  uniqueOpts.forEach(id => {
+    const hero = heroById(id);
+    if(!hero) return;
+    renderHeroCard(box, hero, "選擇這位武將", (heroId) => {
+      localStorage.setItem(storageKey, heroId);
+      location.reload();
+    });
+  });
+}
+
+/* ========================= host: build state ========================= */
+function makeBaseUrl(){
+  const origin = location.origin === "null" ? "" : location.origin;
+  const basePath = location.pathname.split("/").pop() || "sgs.html";
+  return origin ? `${origin}${location.pathname}` : basePath;
+}
+
+function buildHostStateFromUI(){
+  const players = normalizePlayers($("#players").value);
+  if(players.length < 4) throw new Error("標準版身份局建議至少 4 人。");
+
+  const roles = buildRoleList(players.length);
+
+  const roomName = $("#roomName").value.trim();
+  const lordMode = $("#lordMode").value;
+  const fixedLord = $("#fixedLord").value;
+  const lordName = pickLord(players, lordMode, fixedLord);
+
+  const assignments = assignRoles(players, roles, lordName);
+  const tokens = {};
+  assignments.forEach(a => tokens[a.player] = randToken(10));
+
+  const uiPool = $("#heroPoolMode").value;
+  const poolCode = (uiPool === "auto") ? choosePoolAuto(players.length) : uiPool;
+
+  return {
+    v:2, roomName, players, lordName, assignments, tokens,
+    poolCode,
+    phase1:null, phase2:null, chosen:{}, lordHeroId:null
+  };
+}
+
+function buildPhase1(hostState){
+  const activeHeroes = getActiveHeroesByPool(hostState.poolCode);
+
+  const need = needRemainingForOthers(hostState.players.length);
+  if((activeHeroes.length - 1) < need){
+    throw new Error(
+      `武將池「${poolLabel(hostState.poolCode)}」不足以支援目前人數的全局不重複候選。\n` +
+      `需求：剩餘武將 >= ${need}（總武將-1）\n` +
+      `目前：總武將 ${activeHeroes.length}，剩餘最大 ${activeHeroes.length-1}\n` +
+      `解法：切到「基本+進階」或增加武將。`
+    );
+  }
+
+  const lord = hostState.lordName;
+  const lordToken = hostState.tokens[lord];
+  const lordOptions = dealLordOptionsUnique5(activeHeroes);
+
+  const base = makeBaseUrl();
+  const payload = packPlayerPayloadV4({
+    roomName: hostState.roomName,
+    playerName: lord,
+    role: "lord",
+    heroOptions: lordOptions,
+    lordName: hostState.lordName,
+    phase: 1,
+    lordHeroId: null,
+    token: lordToken,
+    poolCode: hostState.poolCode
+  });
+  const lordLink = `${base}#data=${payload}`;
+
+  hostState.phase1 = { lordOptions, lordLink };
+  saveHost(hostState);
+  return hostState;
+}
+
+function buildPhase2(hostState){
+  if(!hostState.lordHeroId) throw new Error("尚未匯入主公回傳碼，無法進入 Phase 2。");
+  const activeHeroes = getActiveHeroesByPool(hostState.poolCode);
+
+  const byPlayer = dealOthersOptionsGlobalUnique(activeHeroes, hostState);
+
+  const base = makeBaseUrl();
+  const links = [];
+
+  hostState.assignments.forEach(a => {
+    if(a.player === hostState.lordName) return;
+
+    const opts = byPlayer[a.player] || [];
+    const payload = packPlayerPayloadV4({
+      roomName: hostState.roomName,
+      playerName: a.player,
+      role: a.role,
+      heroOptions: opts,
+      lordName: hostState.lordName,
+      phase: 2,
+      lordHeroId: hostState.lordHeroId,
+      token: hostState.tokens[a.player],
+      poolCode: hostState.poolCode
+    });
+    links.push({ player: a.player, role: a.role, link: `${base}#data=${payload}` });
+  });
+
+  hostState.phase2 = { links };
+  saveHost(hostState);
+  return hostState;
+}
+
+/* ========================= host rendering ========================= */
+function computeCounts(assignments){
+  const out = {};
+  assignments.forEach(a => {
+    const rn = ROLE_META[a.role]?.name || a.role;
+    out[rn] = (out[rn] || 0) + 1;
+  });
+  return out;
+}
+function configCheckText(assignments){
+  const n = assignments.length;
+  const preset = rolePresetByCount(n);
+  let expectedText = "（人數不在 4–10）";
+  if(preset) expectedText = `主1 忠${preset.loyal} 反${preset.rebel} 內${preset.spy}`;
+
+  const actual = {
+    lord: assignments.filter(x=>x.role==="lord").length,
+    loyal: assignments.filter(x=>x.role==="loyal").length,
+    rebel: assignments.filter(x=>x.role==="rebel").length,
+    spy: assignments.filter(x=>x.role==="spy").length,
+  };
+  const actualText = `主${actual.lord} 忠${actual.loyal} 反${actual.rebel} 內${actual.spy}`;
+  const ok = !!preset && actual.lord===1 && actual.loyal===preset.loyal && actual.rebel===preset.rebel && actual.spy===preset.spy;
+  return { ok, expectedText, actualText };
+}
+
+function renderHost(hostState){
+  $("#resultEmpty").classList.add("hide");
+  $("#resultBox").classList.remove("hide");
+
+  const counts = computeCounts(hostState.assignments);
+  const cc = configCheckText(hostState.assignments);
+  const countText = Object.entries(counts).map(([k,v])=>`${k}${v}`).join("｜");
+  const statusClass = cc.ok ? "ok" : "bad";
+  const statusText = cc.ok
+    ? `✅ 配置符合標準版：${cc.expectedText}`
+    : `⚠️ 配置不符合標準版（或人數超出 4–10）：預期 ${cc.expectedText}；實際 ${cc.actualText}`;
+
+  const lordHero = hostState.lordHeroId ? heroById(hostState.lordHeroId) : null;
+  const lordHeroText = lordHero ? `${lordHero.name}` : "（尚未選）";
+
+  const activeHeroes = getActiveHeroesByPool(hostState.poolCode);
+  const need = needRemainingForOthers(hostState.players.length);
+  const poolInfo = `武將池：${poolLabel(hostState.poolCode)}（總武將 ${activeHeroes.length}；全局不重複需求：剩餘>=${need}）`;
+
+  const phase1Block = hostState.phase1 ? `
+    <div class="statusBox warn" style="margin-bottom:10px">
+      <b>Phase 1（主公連結）</b><br>
+      主公：<b>${escapeHtml(hostState.lordName)}</b>｜主公武將：<b>${escapeHtml(lordHeroText)}</b><br>
+      <div class="small muted" style="margin-top:6px">${escapeHtml(poolInfo)}</div>
+      <div style="margin-top:8px">
+        <span class="copy" data-copy="${escapeHtml(hostState.phase1.lordLink)}">複製主公連結</span>
+        <div class="small muted mono" style="margin-top:6px;word-break:break-all">${escapeHtml(hostState.phase1.lordLink)}</div>
+      </div>
+      <div class="small muted" style="margin-top:8px;line-height:1.45">
+        ※ 主公 5 個候選只給主公看；主公選定後，僅「主公選到的那一隻」從武將池移除，其餘仍可出現在 Phase 2 候選裡（但全場候選仍會保持不重複）。
+      </div>
+    </div>
+  ` : `
+    <div class="statusBox warn" style="margin-bottom:10px">
+      尚未建立 Phase 1。
+    </div>
+  `;
+
+  const phase2Rows = (hostState.phase2?.links || []).map(x => `
+    <tr>
+      <td>${escapeHtml(x.player)}</td>
+      <td>
+        <span class="copy" data-copy="${escapeHtml(x.link)}">複製連結</span>
+        <div class="small muted mono" style="margin-top:6px;word-break:break-all">${escapeHtml(x.link)}</div>
+      </td>
+    </tr>
+  `).join("");
+
+  const phase2Block = hostState.phase2 ? `
+    <div class="statusBox warn" style="margin-bottom:10px">
+      <b>Phase 2（其他人連結｜全場候選不重複）</b><br>
+      已公開主公武將：<b>${escapeHtml(lordHeroText)}</b><br>
+      <span class="small muted">（此區不顯示其他人身份；身份只在「核對表」內顯示）</span>
+    </div>
+
+    <table class="table">
+      <thead><tr><th>玩家</th><th>專屬連結（Phase 2）</th></tr></thead>
+      <tbody>${phase2Rows}</tbody>
+    </table>
+  ` : `
+    <div class="statusBox warn" style="margin-bottom:10px">
+      Phase 2 尚未建立（需先匯入主公回傳碼）。
+    </div>
+  `;
+
+  const auditList = hostState.assignments
+    .map(a => {
+      const chosenId = hostState.chosen[a.player] || null;
+      const hero = chosenId ? heroById(chosenId) : null;
+      return {
+        player: a.player,
+        role: a.role,
+        camp: campOfRole(a.role),
+        roleName: ROLE_META[a.role]?.name || a.role,
+        heroName: hero ? hero.name : "（未回傳）",
+        picked: !!hero
+      };
+    })
+    .sort((a,b) => roleSortKey(a.role)-roleSortKey(b.role) || a.player.localeCompare(b.player,"zh-Hant"));
+
+  const auditRows = auditList.map(x => `
+    <tr>
+      <td>${escapeHtml(x.player)}</td>
+      <td>${escapeHtml(x.camp)}</td>
+      <td>${escapeHtml(x.roleName)}</td>
+      <td>${escapeHtml(x.heroName)}</td>
+      <td class="small muted">${x.picked ? "✅已選" : "—未回傳"}</td>
+    </tr>
+  `).join("");
+
+  const auditText = auditList.map(x =>
+    `${x.player}\t${x.camp}\t${x.roleName}\t${x.heroName}\t${x.picked ? "已選" : "未回傳"}`
+  ).join("\n");
+
+  $("#resultBox").innerHTML = `
+    <div class="notice" style="margin-bottom:12px">
+      ✅ 兩階段流程：主公先選 → 其他人再依身份選（更貼近實戰思考）。\n
+      ✅ 全場候選不重複：Phase 2 會把剩餘武將洗牌後切塊分配，因此「候選」不會重複 → 最終也不會重複。\n
+      🔒 核對表預設隱藏，避免桌上被偷看。
+    </div>
+
+    <div class="statusBox ${statusClass}" style="margin-bottom:10px">
+      <b>身份配置檢查</b>\n${escapeHtml(statusText)}
+    </div>
+
+    ${phase1Block}
+    ${phase2Block}
+
+    <div class="btnbar" style="margin-top:10px;margin-bottom:10px">
+      <button id="btnShowAudit">主持人：顯示核對表（陣營＋身份＋已選武將）</button>
+      <button id="btnHideAudit" class="hide">主持人：隱藏核對表</button>
+      <button id="btnCopyAudit" class="hide">複製核對清單</button>
+    </div>
+
+    <div id="auditPanel" class="hide">
+      <div class="notice" style="margin-bottom:10px">🔒 核對表（${escapeHtml(countText)}）</div>
+      <table class="table">
+        <thead><tr><th>玩家</th><th>陣營</th><th>身份</th><th>已選武將</th><th>回傳</th></tr></thead>
+        <tbody>${auditRows}</tbody>
+      </table>
+      <div class="small muted" style="margin-top:10px;line-height:1.45">
+        建議核對完立刻按「隱藏核對表」避免被偷看。
+      </div>
+    </div>
+  `;
+
+  $("#resultBox").querySelectorAll("[data-copy]").forEach(el=>{
+    el.addEventListener("click", ()=>copyText(el.getAttribute("data-copy")));
+  });
+
+  const btnShow = $("#btnShowAudit");
+  const btnHide = $("#btnHideAudit");
+  const btnCopy = $("#btnCopyAudit");
+  const panel = $("#auditPanel");
+
+  btnShow.addEventListener("click", () => {
+    panel.classList.remove("hide");
+    btnShow.classList.add("hide");
+    btnHide.classList.remove("hide");
+    btnCopy.classList.remove("hide");
+  });
+  btnHide.addEventListener("click", () => {
+    panel.classList.add("hide");
+    btnHide.classList.add("hide");
+    btnCopy.classList.add("hide");
+    btnShow.classList.remove("hide");
+  });
+  btnCopy.addEventListener("click", () => copyText(auditText));
+}
+
+/* ========================= host: commit apply ========================= */
+function applyCommit(hostState, commitObj){
+  const p = commitObj.playerName;
+  if(!hostState.tokens || !hostState.tokens[p]) return { ok:false, msg:`${p}：找不到 token（可能不是同一局）。` };
+  if(hostState.tokens[p] !== commitObj.token) return { ok:false, msg:`${p}：token 不符（可能貼錯回傳碼/不是同一局）。` };
+
+  const hero = heroById(commitObj.heroId);
+  if(!hero) return { ok:false, msg:`${p}：武將ID 無法對應（主持人武將池可能被改過）。` };
+
+  hostState.chosen[p] = commitObj.heroId;
+  if(p === hostState.lordName) hostState.lordHeroId = commitObj.heroId;
+  saveHost(hostState);
+  return { ok:true, msg:`${p}：已更新為「${hero.name}」。` };
+}
+
+/* ========================= editor / draft ========================= */
+function openHeroEditor(){
+  $("#heroEditor").classList.remove("hide");
+  $("#heroesJsonBasic").value = JSON.stringify(HEROES_BASIC, null, 2);
+  $("#heroesJsonAdv").value   = JSON.stringify(HEROES_ADV, null, 2);
+  window.scrollTo({ top: document.body.scrollHeight, behavior:"smooth" });
+}
+function closeHeroEditor(){ $("#heroEditor").classList.add("hide"); }
+
+function loadDraftToUI(){
+  const d = loadDraft();
+  if(!d) return;
+  $("#roomName").value = d.roomName || "";
+  $("#lordMode").value = d.lordMode || "random";
+  $("#fixedLord").value = d.fixedLord || "";
+  $("#heroPoolMode").value = d.heroPoolMode || "auto";
+  $("#players").value = d.players || "";
+}
+function saveDraftFromUI(){
+  saveDraft({
+    roomName: $("#roomName").value.trim(),
+    lordMode: $("#lordMode").value,
+    fixedLord: $("#fixedLord").value,
+    heroPoolMode: $("#heroPoolMode").value,
+    players: $("#players").value
+  });
+}
+
+/* ========================= host init ========================= */
+function initHost(){
+  ["roomName","lordMode","fixedLord","players","heroPoolMode"].forEach(id=>{
+    $("#"+id).addEventListener("input", saveDraftFromUI);
+    $("#"+id).addEventListener("change", saveDraftFromUI);
+  });
+
+  $("#btnDemo").addEventListener("click", ()=>{
+    $("#players").value = ["Stanley","Amy","Kevin","Lily","Jason","Mina","Eric","Yuki"].join("\n");
+    $("#lordMode").value = "random";
+    $("#heroPoolMode").value = "auto";
+    saveDraftFromUI();
+  });
+
+  $("#btnEditHeroes").addEventListener("click", openHeroEditor);
+  $("#btnCloseHeroes").addEventListener("click", closeHeroEditor);
+
+  $("#btnSaveHeroes").addEventListener("click", ()=>{
+    try{
+      const basic = JSON.parse($("#heroesJsonBasic").value);
+      const adv   = JSON.parse($("#heroesJsonAdv").value);
+      validateHeroArray(basic, "基本版");
+      validateHeroArray(adv, "進階版");
+
+      const allIds = new Set();
+      basic.forEach(h=>allIds.add(h.id));
+      adv.forEach(h=>{
+        if(allIds.has(h.id)) throw new Error(`進階版 id 與基本版重複：${h.id}`);
+      });
+
+      HEROES_BASIC = basic;
+      HEROES_ADV   = adv;
+      saveHeroesTwoTiers(HEROES_BASIC, HEROES_ADV);
+      alert("已儲存武將池（基本/進階）");
+      closeHeroEditor();
+      const hs = loadHost(); if(hs) renderHost(hs);
+    }catch(e){
+      alert("儲存失敗：" + (e?.message || e));
+    }
+  });
+
+  $("#btnResetHeroes").addEventListener("click", ()=>{
+    if(confirm("確定重置武將池為預設（基本/進階）？")){
+      resetHeroesTwoTiers();
+      HEROES_BASIC = DEFAULT_BASIC_HEROES;
+      HEROES_ADV   = DEFAULT_ADV_HEROES;
+      $("#heroesJsonBasic").value = JSON.stringify(HEROES_BASIC, null, 2);
+      $("#heroesJsonAdv").value   = JSON.stringify(HEROES_ADV, null, 2);
+      alert("已重置。");
+    }
+  });
+
+  $("#btnResetAll").addEventListener("click", ()=>{
+    if(confirm("確定要清除本機草稿、武將池、以及本局狀態？")){
+      localStorage.removeItem(LS_KEYS.draft);
+      localStorage.removeItem(LS_KEYS.host);
+      resetHeroesTwoTiers();
+      location.reload();
+    }
+  });
+
+  $("#btnPhase1").addEventListener("click", ()=>{
+    try{
+      let hostState = buildHostStateFromUI();
+      hostState = buildPhase1(hostState);
+      $("#btnPhase2").disabled = true;
+      $("#lordImportMsg").textContent = "Phase 1 已建立：把「主公連結」私訊給主公，等主公回傳碼。";
+      $("#commitImportMsg").textContent = "";
+      renderHost(hostState);
+    }catch(e){
+      alert(e?.message || e);
+    }
+  });
+
+  $("#btnClearLordCommit").addEventListener("click", ()=>{
+    $("#lordCommitInput").value = "";
+    $("#lordImportMsg").textContent = "";
+  });
+
+  $("#btnImportLord").addEventListener("click", ()=>{
+    const raw = $("#lordCommitInput").value.trim();
+    if(!raw){ $("#lordImportMsg").textContent = "請貼主公回傳碼。"; return; }
+
+    const hostState = loadHost();
+    if(!hostState){ $("#lordImportMsg").textContent = "找不到本局狀態。請先建立 Phase 1。"; return; }
+
+    const obj = parseCommitCode(raw.split("\n").map(s=>s.trim()).filter(Boolean)[0] || "");
+    if(!obj){ $("#lordImportMsg").textContent = "回傳碼解析失敗（可能被截斷）。"; return; }
+
+    const r = applyCommit(hostState, obj);
+    $("#lordImportMsg").textContent = r.msg;
+
+    if(r.ok && obj.playerName === hostState.lordName){
+      if(hostState.lordHeroId){
+        $("#btnPhase2").disabled = false;
+        $("#lordImportMsg").textContent += "\n已可進入 Phase 2（其他人候選全局不重複）。";
+      }
+    }else if(r.ok){
+      $("#lordImportMsg").textContent += "\n注意：這不是主公回傳碼。請確認主公名字。";
+    }
+    renderHost(hostState);
+  });
+
+  $("#btnPhase2").addEventListener("click", ()=>{
+    try{
+      const hostState = loadHost();
+      if(!hostState) throw new Error("找不到本局狀態，請先建立 Phase 1。");
+      const hs2 = buildPhase2(hostState);
+      $("#commitImportMsg").textContent = "Phase 2 已建立：把各玩家的 Phase 2 連結私訊給對應玩家。";
+      renderHost(hs2);
+    }catch(e){
+      alert(e?.message || e);
+    }
+  });
+
+  $("#btnImportCommit").addEventListener("click", ()=>{
+    const raw = $("#commitInput").value.trim();
+    if(!raw){ $("#commitImportMsg").textContent = "請貼上回傳碼（每行一個）。"; return; }
+
+    const hostState = loadHost();
+    if(!hostState){ $("#commitImportMsg").textContent = "找不到本局狀態。"; return; }
+
+    const lines = raw.split("\n").map(s=>s.trim()).filter(Boolean);
+    let okCount = 0;
+    const msgs = [];
+
+    for(const line of lines){
+      const obj = parseCommitCode(line);
+      if(!obj){ msgs.push("有一行回傳碼無法解析（可能被截斷）。"); continue; }
+      const r = applyCommit(hostState, obj);
+      msgs.push(r.msg);
+      if(r.ok) okCount++;
+    }
+
+    saveHost(hostState);
+    renderHost(hostState);
+    $("#commitImportMsg").textContent = `匯入完成：成功 ${okCount}/${lines.length}。\n` + msgs.join(" / ");
+  });
+
+  $("#btnClearCommit").addEventListener("click", ()=>{
+    $("#commitInput").value = "";
+    $("#commitImportMsg").textContent = "";
+  });
+
+  const hs = loadHost();
+  if(hs){
+    renderHost(hs);
+    $("#resultEmpty").classList.add("hide");
+    $("#btnPhase2").disabled = !hs.lordHeroId;
+  }else{
+    $("#resultEmpty").classList.remove("hide");
+  }
+}
+
+/* ========================= router ========================= */
+function parseHashData(){
+  const h = (location.hash || "").replace(/^#/, "");
+  if(!h) return null;
+  const params = new URLSearchParams(h);
+  const data = params.get("data");
+  return data || null;
+}
+
+(function boot(){
+  const data = parseHashData();
+  if(data){
+    showPlayerView(data);
+  }else{
+    setModeText("Host");
+    $("#hostView").style.display = "grid";
+    $("#playerView").style.display = "none";
+    loadDraftToUI();
+    initHost();
+  }
+})();
+</script>
+</body>
+</html>
